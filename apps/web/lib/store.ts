@@ -30,6 +30,10 @@ export const useAppStore = create<AppState>((set) => ({
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
     set({ user: null, token: null });
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   },
 }));

@@ -4,6 +4,7 @@ node_modules/
 
 # Build outputs
 /apps/api/target/
+/apps/web/.next/
 /apps/admin-web/.next/
 /apps/admin-web/out/
 /apps/patient-miniapp/dist/

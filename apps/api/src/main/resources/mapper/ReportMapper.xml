@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctms.mapper.ReportMapper">
+
+    <!-- Detail report: study-level aggregated stats -->
+    <select id="reportDetail" resultType="java.util.Map">
+        SELECT
+            s.study_code AS studyCode,
+            s.title AS studyTitle,
+            s.status AS studyStatus,
+            COALESCE(sub_stats.subject_count, 0) AS subjectCount,
+            COALESCE(q_stats.query_count, 0) AS queryCount,
+            COALESCE(ae_stats.ae_count, 0) AS aeCount,
+            COALESCE(v_stats.overdue_count, 0) AS overdueVisitCount,
+            COALESCE(doc_stats.total_docs, 0) AS totalDocs,
+            COALESCE(doc_stats.completed_docs, 0) AS completedDocs,
+            CASE WHEN COALESCE(doc_stats.total_docs, 0) > 0
+                 THEN ROUND(100.0 * COALESCE(doc_stats.completed_docs, 0) / doc_stats.total_docs, 1)
+                 ELSE 0 END AS etmfCompletionRate
+        FROM studies s
+        LEFT JOIN (
+            SELECT study_id, COUNT(*) AS subject_count
+            FROM subjects WHERE is_deleted = 0 GROUP BY study_id
+        ) sub_stats ON sub_stats.study_id = s.id
+        LEFT JOIN (
+            SELECT study_id, COUNT(*) AS query_count
+            FROM queries WHERE is_deleted = 0 GROUP BY study_id
+        ) q_stats ON q_stats.study_id = s.id
+        LEFT JOIN (
+            SELECT study_id, COUNT(*) AS ae_count
+            FROM aes WHERE is_deleted = 0 GROUP BY study_id
+        ) ae_stats ON ae_stats.study_id = s.id
+        LEFT JOIN (
+            SELECT subject_id, COUNT(*) AS cnt FROM visits WHERE is_deleted = 0 AND status = 'OVERDUE' GROUP BY subject_id
+        ) overdue ON 1=1
+        LEFT JOIN (
+            SELECT sj.study_id, COUNT(*) AS overdue_count
+            FROM subjects sj INNER JOIN visits v ON v.subject_id = sj.id AND v.is_deleted = 0 AND v.status = 'OVERDUE'
+            WHERE sj.is_deleted = 0 GROUP BY sj.study_id
+        ) v_stats ON v_stats.study_id = s.id
+        LEFT JOIN (
+            SELECT belong_id AS study_id,
+                   COUNT(*) AS total_docs,
+                   SUM(CASE WHEN status = 'UPLOADED' THEN 1 ELSE 0 END) AS completed_docs
+            FROM file_objects WHERE is_deleted = 0 AND belong_entity = 'document'
+            GROUP BY belong_id
+        ) doc_stats ON doc_stats.study_id = s.id
+        WHERE s.is_deleted = 0
+        <if test="studyId != null and studyId != ''">
+            AND s.id = #{studyId}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND s.created_at >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND s.created_at &lt;= #{endDate}
+        </if>
+        ORDER BY s.study_code
+    </select>
+
+</mapper>

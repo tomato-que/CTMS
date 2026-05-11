@@ -23,11 +23,23 @@ export default function LoginPage() {
     try {
       const res: any = await api.post('/auth/login', { username, password });
       if (res.code === 0) {
-        const { accessToken, user } = res.data;
+        const { accessToken, refreshToken } = res.data;
+        // Java backend returns {accessToken, refreshToken, tokenType}; no user object yet
+        const userObj = {
+          id: 'u-admin-001',
+          username: username,
+          email: username + '@ctms.local',
+          realName: username === 'admin' ? '管理员' : username,
+          phone: '',
+          role: { id: 'r-admin', name: '管理员', code: 'ROLE_ADMIN', permissions: {} },
+          site: null,
+        };
         localStorage.setItem('token', accessToken);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('refreshToken', refreshToken || '');
+        localStorage.setItem('user', JSON.stringify(userObj));
+        localStorage.setItem('tokenVersion', 'v2'); // force re-login after auth changes
         setToken(accessToken);
-        setUser(user);
+        setUser(userObj);
         router.push('/dashboard');
       } else {
         setError(res.message || '登录失败');
@@ -103,14 +115,11 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs text-gray-500 mb-2 font-medium">演示账号</p>
+            <p className="text-xs text-gray-500 mb-2 font-medium">当前可用账号</p>
             <div className="text-xs text-gray-400 space-y-0.5">
-              <p>管理员: admin / password123</p>
-              <p>PM: pm_zhang / password123</p>
-              <p>CRA: cra_li / password123</p>
-              <p>DM: dm_zhao / password123</p>
-              <p>PI: pi_chen / password123</p>
+              <p>管理员: admin / admin123</p>
             </div>
+            <p className="text-xs text-gray-400 mt-2">更多用户请通过 API 管理后台配置</p>
           </div>
         </div>
       </div>

@@ -19,7 +19,10 @@ const menuItems = [
   { href: '/safety/ae', label: 'AE/SAE', icon: ShieldAlert },
   { href: '/documents', label: 'eTMF文档', icon: FolderOpen },
   { href: '/reports', label: '报表分析', icon: FileText },
-  { href: '/system/users', label: '系统管理', icon: Settings },
+  { href: '/system/users', label: '用户管理', icon: Settings },
+  { href: '/system/roles', label: '角色管理', icon: Settings },
+  { href: '/system/sites', label: '中心管理', icon: Settings },
+  { href: '/system/audit-logs', label: '审计日志', icon: Settings },
 ];
 
 export function Sidebar() {

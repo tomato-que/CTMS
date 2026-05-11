@@ -28,12 +28,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       }
     }
 
-    if (!storedToken) {
-      // No token - redirect to login immediately, don't show the dashboard layout
+    // Check token freshness - force re-login if token is from before the auth fix
+    const tokenVersion = localStorage.getItem('tokenVersion');
+    if (!storedToken || tokenVersion !== 'v2') {
+      localStorage.clear();
       router.replace('/login');
-    } else {
-      setReady(true);
+      return;
     }
+    setReady(true);
   }, []);
 
   // Not logged in - show minimal spinner while redirecting

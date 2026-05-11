@@ -16,14 +16,14 @@ public class VisitController {
     private final VisitMapper visitMapper;
 
     @GetMapping("/subject/{subjectId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CRA','ROLE_CRC','ROLE_PI')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CRA','ROLE_CRC','ROLE_PI')")
     public ApiResponse<List<Visit>> getSubjectVisits(@PathVariable String subjectId) {
         return ApiResponse.success(visitMapper.selectList(
                 new LambdaQueryWrapper<Visit>().eq(Visit::getSubjectId, subjectId)));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CRC')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CRC')")
     public ApiResponse<Visit> createVisit(@RequestBody Visit visit) {
         visitMapper.insert(visit);
         return ApiResponse.success(visit);
