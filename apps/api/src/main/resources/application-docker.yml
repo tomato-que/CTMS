@@ -1,0 +1,17 @@
+# Docker Compose profile — uses Docker service names as hosts
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/ctms_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456
+  data:
+    redis:
+      host: redis
+  rabbitmq:
+    host: rabbitmq
+
+minio:
+  endpoint: http://minio:9000
+
+opensearch:
+  uris: http://opensearch:9200

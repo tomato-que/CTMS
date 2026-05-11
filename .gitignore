@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+**/.pnpm-store/
+
+# Build outputs
+/apps/api/target/
+/apps/admin-web/.next/
+/apps/admin-web/out/
+/apps/patient-miniapp/dist/
+*.class
+*.jar
+*.war
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Temp
+/tmp/
+/temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# Docker
+docker-compose.override.yml
+
+# Database
+*.sql.gz
+*.dump
+
+# Coverage
+coverage/
+.nyc_output/

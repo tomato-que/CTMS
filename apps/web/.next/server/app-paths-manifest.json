@@ -1,0 +1,11 @@
+{
+  "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
+  "/(main)/queries/page": "app/(main)/queries/page.js",
+  "/(main)/subjects/page": "app/(main)/subjects/page.js",
+  "/(main)/visits/config/page": "app/(main)/visits/config/page.js",
+  "/(main)/projects/page": "app/(main)/projects/page.js",
+  "/(main)/safety/ae/page": "app/(main)/safety/ae/page.js",
+  "/(main)/system/users/page": "app/(main)/system/users/page.js",
+  "/(main)/reports/page": "app/(main)/reports/page.js",
+  "/(main)/documents/page": "app/(main)/documents/page.js"
+}
