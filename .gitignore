@@ -58,3 +58,5 @@ docker-compose.override.yml
 # Coverage
 coverage/
 .nyc_output/
+apps/api/.mvn/wrapper/maven-wrapper.jar
+maven-wrapper.jar
