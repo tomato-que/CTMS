@@ -13,7 +13,11 @@ const statusColors:Record<string,string>={ DRAFT:'bg-gray-100 text-gray-600',STA
 export default function ProjectsPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const { data: studies, isLoading, isError } = useQuery({ queryKey: ['studies'], queryFn: () => api.get('/studies?size=100').then((r:any)=>r.data||[]) });
+  const { data: studies, isLoading, isError, refetch } = useQuery({
+    queryKey: ['studies'],
+    queryFn: () => api.get('/studies?size=100').then((r:any)=>r.data||[]),
+    staleTime: 0, // Always refetch on mount to show latest data
+  });
 
   const filtered = (studies||[]).filter((s:any) => !search || s.studyCode?.includes(search) || s.title?.includes(search) || s.indication?.includes(search));
 

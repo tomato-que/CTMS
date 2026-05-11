@@ -31,7 +31,26 @@ public class AeController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CRA','ROLE_CRC','ROLE_PI')")
-    public ApiResponse<Ae> reportAe(@RequestBody Ae ae) {
+    public ApiResponse<Ae> reportAe(@RequestBody java.util.Map<String, Object> body) {
+        Ae ae = new Ae();
+        ae.setStudyId((String) body.getOrDefault("studyId", ""));
+        ae.setSiteId((String) body.getOrDefault("siteId", null));
+        ae.setSubjectId((String) body.getOrDefault("subjectId", ""));
+        ae.setAeNumber((String) body.getOrDefault("aeNumber", "AE-" + System.currentTimeMillis()));
+        ae.setAeTerm((String) body.getOrDefault("aeTerm", ""));
+        ae.setSeverityGrade(body.get("severityGrade") != null ?
+                Integer.parseInt(body.get("severityGrade").toString()) : 1);
+        ae.setCausality((String) body.getOrDefault("causality", ""));
+        // onsetDate: accept String or parse
+        Object od = body.get("onsetDate");
+        if (od != null) {
+            try { ae.setOnsetDate(java.time.LocalDate.parse(od.toString())); }
+            catch (Exception e) { ae.setOnsetDate(java.time.LocalDate.now()); }
+        }
+        ae.setOutcome((String) body.getOrDefault("outcome", ""));
+        ae.setIsSerious(body.get("isSerious") != null ?
+                Integer.parseInt(body.get("isSerious").toString()) : 0);
+        ae.setStatus((String) body.getOrDefault("status", "REPORTED"));
         aeMapper.insert(ae);
         return ApiResponse.success(ae);
     }

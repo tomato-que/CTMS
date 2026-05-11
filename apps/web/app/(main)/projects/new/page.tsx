@@ -2,24 +2,32 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function NewProjectPage() {
   const router = useRouter();
+  const qc = useQueryClient();
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ studyCode: '', title: '', phase: 'PHASE_III', therapeuticArea: '', indication: '', plannedSites: 0, plannedSubjects: 0 });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setError('');
     try {
       const res: any = await api.post('/studies', form);
       if (res.code === 0) {
+        // Invalidate the studies query cache so the list refreshes
+        qc.invalidateQueries({ queryKey: ['studies'] });
         router.push('/projects');
+      } else {
+        setError(res.message || '创建失败');
       }
     } catch (err) {
-      console.error('Failed to create project:', err);
+      setError('网络错误，请检查后端服务');
     } finally {
       setSaving(false);
     }
@@ -87,9 +95,10 @@ export default function NewProjectPage() {
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+          {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
           <button type="submit" disabled={saving}
             className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50">
-            <Save size={16} /> {saving ? '保存中...' : '保存项目'}
+            {saving ? <><Loader2 size={14} className="animate-spin" /> 保存中...</> : <><Save size={16} /> 保存项目</>}
           </button>
           <button type="button" onClick={() => router.back()}
             className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
